@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React from 'react';
 import EmployeeSearch from './EmployeeSearch';
 import EmployeeTable from './EmployeeTable';
 import EmployeeCreate from './EmployeeCreate';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
-import App from '../App';
+
 
 const client = new ApolloClient({
   uri: 'http://localhost:5500/graphql',
@@ -12,14 +12,7 @@ const client = new ApolloClient({
 });
 
 
-class EmployeeDirectory extends Component {
-  state = {
-    // Initial state or data to be passed to child components
-  };
-
-
-
-  render() {
+const EmployeeDirectory = () => {
     return (
       <ApolloProvider client={client}>
         <div className='container mt-5'>
@@ -27,20 +20,14 @@ class EmployeeDirectory extends Component {
             <div className='card-header text-center'>
               <h3>Employee Management System</h3>
             </div>
-            </div>
-            <EmployeeSearch />
-            <EmployeeTable />
-            <EmployeeCreate />
-          
+          </div>
+          <EmployeeSearch />
+          <EmployeeTable />
+          <EmployeeCreate />
         </div>
       </ApolloProvider>
     );
-  }
-
-  // render() {
-  //     return <EmployeeTable />;
-  //   }
-}
+};
 
 export default EmployeeDirectory;
 
