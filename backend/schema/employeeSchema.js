@@ -38,7 +38,6 @@ const resolvers = {
       return newEmployee;
     },
     deleteEmployee: async (_, { id }) => {
-      console.log("deleteEmployee ", id);
       await Employee.findByIdAndDelete(id);
       return true;
     },

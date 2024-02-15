@@ -1,40 +1,44 @@
-import React  from 'react';
-import { useQuery, useMutation } from '@apollo/react-components';
+import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Button, Card, Table } from 'react-bootstrap';
+import { useQuery, useMutation } from '@apollo/client';
 import { GET_EMPLOYEES, DELETE_EMPLOYEE } from '../graphql/queries';
-
-
+import EmployeeCreateModal from './EmployeeCreate';
 
 const EmployeeTable = () => {
+    const [showModal, setShowModal] = useState(false);
 
-    const DeleteButton = ({ id }) => {
-        const [deleteEmployee] = useMutation(DELETE_EMPLOYEE, {
-            refetchQueries: [{ query: GET_EMPLOYEES }] // Refetch employees after deletion
-        });
-    
-        const handleDelete = () => {
-            deleteEmployee({ variables: { id } });
-        };
-    
-        return <button className="btn btn-danger" onClick={handleDelete}>Delete</button>;
-    };
-    
+    const { loading, error, data } = useQuery(GET_EMPLOYEES);
+    const [deleteEmployee] = useMutation(DELETE_EMPLOYEE, {
+        refetchQueries: [{ query: GET_EMPLOYEES }],
+    });
+
+    const handleCloseModal = () => setShowModal(false);
+    const handleShowModal = () => setShowModal(true);
+
     const formatDate = (timestamp) => {
         const date = new Date(parseInt(timestamp));
         const options = { month: 'short', year: 'numeric', day: '2-digit' };
         return date.toLocaleDateString('en-US', options);
     };
-    
 
-    const { loading, error, data } = useQuery(GET_EMPLOYEES);
+    const handleDelete = (id) => {
+        deleteEmployee({ variables: { id } });
+    };
+
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error.message}</p>;
 
     return (
-        <div className="card mt-5">
-            <div className="card-header text-center">Employees</div>
-            <div className="card-body p-3">
-                <table className="table">
+        <Card className='mt-5'>
+            <Card.Header className='d-flex justify-content-between align-items-center'>
+                <h4>Employee Directory</h4>
+                <Button variant='primary' onClick={handleShowModal} className='float-end'>
+                    Create New Employee
+                </Button>
+            </Card.Header>
+            <Card.Body>
+                <Table striped bordered hover>
                     <thead>
                         <tr>
                             <th>No.</th>
@@ -62,16 +66,18 @@ const EmployeeTable = () => {
                                 <td>{employee.employeeType}</td>
                                 <td>{employee.currentStatus ? 'Working' : 'Retired'}</td>
                                 <td>
-                                    <DeleteButton id={employee.id} />
+                                    <Button variant='danger' onClick={() => handleDelete(employee.id)}>
+                                        Delete
+                                    </Button>
                                 </td>
                             </tr>
                         ))}
                     </tbody>
-                </table>
-            </div>
-        </div>
+                </Table>
+            </Card.Body>
+            <EmployeeCreateModal show={showModal} handleClose={handleCloseModal} />
+        </Card>
     );
 };
-
 
 export default EmployeeTable;
